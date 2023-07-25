@@ -1,5 +1,5 @@
 {
-    "name": "phptdgram/td-client",
+    "name": "totaldev/tg-client",
     "type": "library",
     "description": "PHP TD Gram TdClient Component",
     "keywords": [
@@ -8,22 +8,24 @@
         "telegram",
         "tdlib"
     ],
-    "homepage": "https://github.com/phptdgram/td-client",
+    "homepage": "https://github.com/totaldev/tg-client",
     "license": "MIT",
     "authors": [
         {
             "name": "Aurimas Niekis",
             "email": "aurimas@niekis.lt"
+        },
+        {
+            "name": "Vadim Kovalenko"
         }
     ],
     "support": {
-        "issues": "https://github.com/phptdgram/td-client",
-        "source": "https://github.com/phptdgram/td-client"
+        "issues": "https://github.com/totaldev/tg-client",
+        "source": "https://github.com/totaldev/tg-client"
     },
     "require": {
-        "php": "^7.4||^8.0",
-        "phptdgram/adapter": "^1.0",
-        "phptdgram/schema": "^1.0",
+        "php": "^8.0",
+        "totaldev/tg-schema": "^1.0",
         "psr/log": "^1.1"
     },
     "require-dev": {
@@ -33,7 +35,7 @@
     },
     "autoload": {
         "psr-4": {
-            "PHPTdGram\\TdClient\\": "src"
+            "Totaldev\\TdClient\\": "src"
         },
         "classmap": [
             "src/"
@@ -41,7 +43,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "PHPTdGram\\TdClient\\Tests\\": "tests"
+            "Totaldev\\TdClient\\Tests\\": "tests"
         }
     },
     "scripts": {
