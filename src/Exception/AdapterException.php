@@ -9,6 +9,6 @@ use Exception;
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
  */
-class TdClientException extends Exception
+class AdapterException extends Exception
 {
 }

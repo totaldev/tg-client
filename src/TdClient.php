@@ -2,24 +2,23 @@
 
 declare(strict_types=1);
 
-namespace PHPTdGram\TdClient;
+namespace Totaldev\TdClient;
 
-use PHPTdGram\Adapter\AdapterInterface;
-use PHPTdGram\Adapter\Exception\AdapterException;
-use PHPTdGram\Adapter\Exception\JsonException;
-use PHPTdGram\Schema\Error;
-use PHPTdGram\Schema\LogStreamDefault;
-use PHPTdGram\Schema\LogStreamEmpty;
-use PHPTdGram\Schema\LogStreamFile;
-use PHPTdGram\Schema\SetLogStream;
-use PHPTdGram\Schema\SetLogVerbosityLevel;
-use PHPTdGram\Schema\TdFunction;
-use PHPTdGram\Schema\TdObject;
-use PHPTdGram\Schema\TdSchemaRegistry;
-use PHPTdGram\Schema\UpdateOption;
-use PHPTdGram\TdClient\Exception\ErrorReceivedException;
-use PHPTdGram\TdClient\Exception\QueryTimeoutException;
-use PHPTdGram\TdClient\Exception\TdClientException;
+use Totaldev\Schema\Error;
+use Totaldev\Schema\LogStreamDefault;
+use Totaldev\Schema\LogStreamEmpty;
+use Totaldev\Schema\LogStreamFile;
+use Totaldev\Schema\SetLogStream;
+use Totaldev\Schema\SetLogVerbosityLevel;
+use Totaldev\Schema\TdFunction;
+use Totaldev\Schema\TdObject;
+use Totaldev\Schema\TdSchemaRegistry;
+use Totaldev\Schema\UpdateOption;
+use Totaldev\TdClient\Exception\AdapterException;
+use Totaldev\TdClient\Exception\ErrorReceivedException;
+use Totaldev\TdClient\Exception\JsonException;
+use Totaldev\TdClient\Exception\QueryTimeoutException;
+use Totaldev\TdClient\Exception\TdClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -29,43 +28,72 @@ use Psr\Log\NullLogger;
 class TdClient
 {
     private AdapterInterface $adapter;
-    private LoggerInterface  $logger;
+
+    private LoggerInterface $logger;
 
     /** @var TdObject[] */
     private array $packetBacklog;
 
     public function __construct(AdapterInterface $adapter, LoggerInterface $logger = null)
     {
-        $this->adapter       = $adapter;
-        $this->logger        = $logger ?? new NullLogger();
+        $this->adapter = $adapter;
+        $this->logger = $logger ?? new NullLogger();
         $this->packetBacklog = [];
     }
 
     /**
+     * Sends packet to TdLib marked with extra identifier and loops till received marked response back or timeout
+     * occurs. Stores all in between packets in backlog.
+     *
+     * @param TdFunction $packet request packet to send to TdLib
+     * @param int $timeout the maximum number of seconds allowed for this function to wait for a response
+     *                                   packet
+     * @param float $receiveTimeout the maximum number of seconds allowed for this function to wait for new data
+     *
      * @throws AdapterException
+     * @throws ErrorReceivedException
      * @throws JsonException
-     * @throws TdClientException
+     * @throws QueryTimeoutException
      */
-    public function verifyVersion(): void
+    public function query(TdFunction $packet, int $timeout = 10, float $receiveTimeout = 0.1): TdObject
     {
-        /** @var UpdateOption $response */
-        $response = $this->receive(10);
-
-        if (!($response instanceof UpdateOption)) {
-            throw new TdClientException(sprintf('First packet supposed to be "UpdateOption" received "%s"', $response->getTdTypeName()));
+        if (null === $packet->getTdExtra()) {
+            $packet->setTdExtra(spl_object_hash($packet));
         }
 
-        $clientVersion = $response->getValue()->getValue();
-        $schemaVersion = TdSchemaRegistry::VERSION;
+        $extra = $packet->getTdExtra();
+        $this->send($packet);
 
-        if ($schemaVersion !== $clientVersion) {
-            throw new TdClientException(sprintf('Client TdLib version "%s" doesnt match Schema version "%s"', $clientVersion, $schemaVersion));
+        $startTime = time();
+        $obj = null;
+        while (true) {
+            $obj = $this->receive($receiveTimeout, false);
+
+            if (null === $obj) {
+                if ((time() - $startTime) > $timeout) {
+                    throw new QueryTimeoutException($packet);
+                }
+
+                continue;
+            }
+
+            if ($extra === $obj->getTdExtra()) {
+                break;
+            } else {
+                $this->packetBacklog[] = $obj;
+            }
+
+            if ((time() - $startTime) > $timeout) {
+                throw new QueryTimeoutException($packet);
+            }
         }
+
+        return $obj;
     }
 
     /**
-     * @param float $timeout        the maximum number of seconds allowed for this function to wait for new data
-     * @param bool  $processBacklog should process backlog packets
+     * @param float $timeout the maximum number of seconds allowed for this function to wait for new data
+     * @param bool $processBacklog should process backlog packets
      *
      * @throws AdapterException
      * @throws ErrorReceivedException
@@ -98,28 +126,26 @@ class TdClient
     }
 
     /**
-     * @param int $level New value of the verbosity level for logging. Value 0 corresponds to fatal errors, value 1
-     *                   corresponds to errors, value 2 corresponds to warnings and debug warnings, value 3 corresponds
-     *                   to informational, value 4 corresponds to debug, value 5 corresponds to verbose debug, value
-     *                   greater than 5 and up to 1023 can be used to enable even more logging.
+     * Sends packet to TdLib.
      *
-     * @return $this
+     * @param TdFunction $packet request packet to send to TdLib
      *
      * @throws AdapterException
      * @throws JsonException
      */
-    public function setLogVerbosityLevel(int $level): self
+    public function send(TdFunction $packet): void
     {
-        $this->adapter->execute(
-            new SetLogVerbosityLevel($level)
+        $this->logger->debug(
+            sprintf('Sending packet "%s" to TdLib', $packet->getTdTypeName()),
+            ['packet' => $packet]
         );
 
-        return $this;
+        $this->adapter->send($packet);
     }
 
     /**
-     * @param string $file           path to the file to where the internal TDLib log will be written
-     * @param int    $maxLogFileSize the maximum size of the file to where the internal TDLib log is written before the
+     * @param string $file path to the file to where the internal TDLib log will be written
+     * @param int $maxLogFileSize the maximum size of the file to where the internal TDLib log is written before the
      *                               file will be auto-rotated
      *
      * @return $this
@@ -144,23 +170,6 @@ class TdClient
      * @throws AdapterException
      * @throws JsonException
      */
-    public function setLogToStderr(): self
-    {
-        $this->adapter->execute(
-            new SetLogStream(
-                new LogStreamDefault()
-            )
-        );
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     *
-     * @throws AdapterException
-     * @throws JsonException
-     */
     public function setLogToNone(): self
     {
         $this->adapter->execute(
@@ -173,70 +182,61 @@ class TdClient
     }
 
     /**
-     * Sends packet to TdLib marked with extra identifier and loops till received marked response back or timeout
-     * occurs. Stores all in between packets in backlog.
-     *
-     * @param TdFunction $packet         request packet to send to TdLib
-     * @param int        $timeout        the maximum number of seconds allowed for this function to wait for a response
-     *                                   packet
-     * @param float      $receiveTimeout the maximum number of seconds allowed for this function to wait for new data
+     * @return $this
      *
      * @throws AdapterException
-     * @throws ErrorReceivedException
      * @throws JsonException
-     * @throws QueryTimeoutException
      */
-    public function query(TdFunction $packet, int $timeout = 10, float $receiveTimeout = 0.1): TdObject
+    public function setLogToStderr(): self
     {
-        if (null === $packet->getTdExtra()) {
-            $packet->setTdExtra(spl_object_hash($packet));
-        }
+        $this->adapter->execute(
+            new SetLogStream(
+                new LogStreamDefault()
+            )
+        );
 
-        $extra = $packet->getTdExtra();
-        $this->send($packet);
-
-        $startTime = time();
-        $obj       = null;
-        while (true) {
-            $obj = $this->receive($receiveTimeout, false);
-
-            if (null === $obj) {
-                if ((time() - $startTime) > $timeout) {
-                    throw new QueryTimeoutException($packet);
-                }
-
-                continue;
-            }
-
-            if ($extra === $obj->getTdExtra()) {
-                break;
-            } else {
-                $this->packetBacklog[] = $obj;
-            }
-
-            if ((time() - $startTime) > $timeout) {
-                throw new QueryTimeoutException($packet);
-            }
-        }
-
-        return $obj;
+        return $this;
     }
 
     /**
-     * Sends packet to TdLib.
+     * @param int $level New value of the verbosity level for logging. Value 0 corresponds to fatal errors, value 1
+     *                   corresponds to errors, value 2 corresponds to warnings and debug warnings, value 3 corresponds
+     *                   to informational, value 4 corresponds to debug, value 5 corresponds to verbose debug, value
+     *                   greater than 5 and up to 1023 can be used to enable even more logging.
      *
-     * @param TdFunction $packet request packet to send to TdLib
+     * @return $this
      *
      * @throws AdapterException
      * @throws JsonException
      */
-    public function send(TdFunction $packet): void
+    public function setLogVerbosityLevel(int $level): self
     {
-        $this->logger->debug(
-            sprintf('Sending packet "%s" to TdLib', $packet->getTdTypeName()),
-            ['packet' => $packet]
+        $this->adapter->execute(
+            new SetLogVerbosityLevel($level)
         );
 
-        $this->adapter->send($packet);
+        return $this;
+    }
+
+    /**
+     * @throws AdapterException
+     * @throws JsonException
+     * @throws TdClientException
+     */
+    public function verifyVersion(): void
+    {
+        /** @var UpdateOption $response */
+        $response = $this->receive(10);
+
+        if (!($response instanceof UpdateOption)) {
+            throw new TdClientException(sprintf('First packet supposed to be "UpdateOption" received "%s"', $response->getTdTypeName()));
+        }
+
+        $clientVersion = $response->getValue()->getValue();
+        $schemaVersion = TdSchemaRegistry::VERSION;
+
+        if ($schemaVersion !== $clientVersion) {
+            throw new TdClientException(sprintf('Client TdLib version "%s" doesnt match Schema version "%s"', $clientVersion, $schemaVersion));
+        }
     }
 }

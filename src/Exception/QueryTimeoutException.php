@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace PHPTdGram\TdClient\Exception;
+namespace Totaldev\TdClient\Exception;
 
-use PHPTdGram\Schema\TdObject;
+use Totaldev\Schema\TdObject;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
