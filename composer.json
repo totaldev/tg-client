@@ -35,7 +35,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Totaldev\\TdClient\\": "src"
+            "Totaldev\\TgClient\\": "src"
         },
         "classmap": [
             "src/"
@@ -43,7 +43,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Totaldev\\TdClient\\Tests\\": "tests"
+            "Totaldev\\TgClient\\Tests\\": "tests"
         }
     },
     "scripts": {

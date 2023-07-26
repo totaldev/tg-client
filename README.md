@@ -10,7 +10,7 @@
 
 [![Email][ico-email]][link-email]
 
-The PHP TD Gram TdLib Client. Manages communication between TdLib and PHP. Accepts [phptdgram/adapter][link-adapter] based adapters. Works with [phptdgram/schema][link-schema] objects. 
+The PHP TD Gram TdLib Client. Manages communication between TdLib and PHP. Accepts [totaldev/adapter][link-adapter] based adapters. Works with [totaldev/schema][link-schema] objects. 
 
 
 ## Install
@@ -18,7 +18,7 @@ The PHP TD Gram TdLib Client. Manages communication between TdLib and PHP. Accep
 Via Composer
 
 ```bash
-$ composer require phptdgram/td-client
+$ composer require totaldev/tg-client
 ```
 
 ## Basic Usage
@@ -26,12 +26,12 @@ $ composer require phptdgram/td-client
 ```php
 <?php
 
-use PHPTdGram\Schema\FormattedText;
-use PHPTdGram\Schema\InputMessageText;
-use PHPTdGram\Schema\SendMessage;
-use PHPTdGram\Schema\SendMessageOptions;
-use PHPTdGram\Schema\TdObject;
-use PHPTdGram\TdClient\TdClient;
+use Totaldev\TgSchema\FormattedText;
+use Totaldev\TgSchema\InputMessageText;
+use Totaldev\TgSchema\SendMessage;
+use Totaldev\TgSchema\SendMessageOptions;
+use Totaldev\TgSchema\TdObject;
+use Totaldev\TdClient\TdClient;
 
 $adapter = new FFIAdapter();
 
@@ -72,7 +72,7 @@ while (true) {
 
 declare(strict_types=1);
 
-namespace PHPTdGram\TdClient;
+namespace Totaldev\TgClient;
 
 class TdClient
 {
@@ -206,20 +206,20 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details
 
 Please see [License File](LICENSE) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/phptdgram/td-client.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/totaldev/tg-client.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/com/phptdgram/td-client/master.svg?style=flat-square
-[ico-quality]: https://img.shields.io/scrutinizer/quality/g/phptdgram/td-client?style=flat-square
-[ico-coverage]: https://img.shields.io/scrutinizer/coverage/g/phptdgram/td-client?style=flat-square
-[ico-mutation]: https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fphptdgram%2Ftd-client%2Fmaster
-[ico-downloads]: https://img.shields.io/packagist/dt/phptdgram/td-client.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/com/totaldev/tg-client/master.svg?style=flat-square
+[ico-quality]: https://img.shields.io/scrutinizer/quality/g/totaldev/tg-client?style=flat-square
+[ico-coverage]: https://img.shields.io/scrutinizer/coverage/g/totaldev/tg-client?style=flat-square
+[ico-mutation]: https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FTotaldev%2Ftg-client%2Fmaster
+[ico-downloads]: https://img.shields.io/packagist/dt/totaldev/tg-client.svg?style=flat-square
 [ico-email]: https://img.shields.io/badge/email-aurimas@niekis.lt-blue.svg?style=flat-square
 
-[link-travis]: https://travis-ci.com/phptdgram/td-client
-[link-packagist]: https://packagist.org/packages/phptdgram/td-client
-[link-scrutinizer]: https://scrutinizer-ci.com/g/phptdgram/td-client
-[link-mutator]: https://dashboard.stryker-mutator.io/reports/github.com/phptdgram/td-client/master
-[link-downloads]: https://packagist.org/packages/phptdgram/td-client/stats
-[link-adapter]: https://github.com/phptdgram/adapter
-[link-schema]: https://github.com/phptdgram/schema
+[link-travis]: https://travis-ci.com/totaldev/tg-client
+[link-packagist]: https://packagist.org/packages/totaldev/tg-client
+[link-scrutinizer]: https://scrutinizer-ci.com/g/totaldev/tg-client
+[link-mutator]: https://dashboard.stryker-mutator.io/reports/github.com/totaldev/tg-client/master
+[link-downloads]: https://packagist.org/packages/totaldev/tg-client/stats
+[link-adapter]: https://github.com/totaldev/adapter
+[link-schema]: https://github.com/totaldev/schema
 [link-email]: mailto:aurimas@niekis.lt

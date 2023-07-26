@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Totaldev\TdClient\Exception;
+namespace Totaldev\TgClient\Exception;
 
-use Totaldev\Schema\TdObject;
+use Totaldev\TgSchema\TdObject;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
  */
-class QueryTimeoutException extends TdClientException
+class QueryTimeoutException extends TgClientException
 {
     private TdObject $packet;
 

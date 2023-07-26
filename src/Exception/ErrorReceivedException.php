@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Totaldev\TdClient\Exception;
+namespace Totaldev\TgClient\Exception;
 
 use Totaldev\Schema\Error;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
  */
-class ErrorReceivedException extends TdClientException
+class ErrorReceivedException extends TgClientException
 {
     private Error $error;
 

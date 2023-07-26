@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PHPTdGram\Adapter\Exception;
+namespace Totaldev\TgClient\Exception;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>

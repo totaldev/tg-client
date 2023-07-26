@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Totaldev\TdClient;
+namespace Totaldev\TgClient;
 
 use Totaldev\Schema\Error;
 use Totaldev\Schema\LogStreamDefault;
@@ -14,18 +14,18 @@ use Totaldev\Schema\TdFunction;
 use Totaldev\Schema\TdObject;
 use Totaldev\Schema\TdSchemaRegistry;
 use Totaldev\Schema\UpdateOption;
-use Totaldev\TdClient\Exception\AdapterException;
-use Totaldev\TdClient\Exception\ErrorReceivedException;
-use Totaldev\TdClient\Exception\JsonException;
-use Totaldev\TdClient\Exception\QueryTimeoutException;
-use Totaldev\TdClient\Exception\TdClientException;
+use Totaldev\TgClient\Exception\AdapterException;
+use Totaldev\TgClient\Exception\ErrorReceivedException;
+use Totaldev\TgClient\Exception\JsonException;
+use Totaldev\TgClient\Exception\QueryTimeoutException;
+use Totaldev\TgClient\Exception\TgClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
  */
-class TdClient
+class TgClient
 {
     private AdapterInterface $adapter;
 
@@ -221,7 +221,7 @@ class TdClient
     /**
      * @throws AdapterException
      * @throws JsonException
-     * @throws TdClientException
+     * @throws TgClientException
      */
     public function verifyVersion(): void
     {
@@ -229,14 +229,14 @@ class TdClient
         $response = $this->receive(10);
 
         if (!($response instanceof UpdateOption)) {
-            throw new TdClientException(sprintf('First packet supposed to be "UpdateOption" received "%s"', $response->getTdTypeName()));
+            throw new TgClientException(sprintf('First packet supposed to be "UpdateOption" received "%s"', $response->getTdTypeName()));
         }
 
         $clientVersion = $response->getValue()->getValue();
         $schemaVersion = TdSchemaRegistry::VERSION;
 
         if ($schemaVersion !== $clientVersion) {
-            throw new TdClientException(sprintf('Client TdLib version "%s" doesnt match Schema version "%s"', $clientVersion, $schemaVersion));
+            throw new TgClientException(sprintf('Client TdLib version "%s" doesnt match Schema version "%s"', $clientVersion, $schemaVersion));
         }
     }
 }

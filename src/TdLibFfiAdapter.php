@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Totaldev\TdClient;
+namespace Totaldev\TgClient;
 
 use FFI;
 use JsonException as PHPJsonException;
-use Totaldev\TdClient\Exception\AdapterException;
-use Totaldev\TdClient\Exception\JsonException;
+use Totaldev\TgClient\Exception\AdapterException;
+use Totaldev\TgClient\Exception\JsonException;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
@@ -32,7 +32,7 @@ HEADER;
      *
      * @throws AdapterException
      */
-    public function __construct(string $libFile = null, int $logLevel = 0)
+    public function __construct(string $libFile = null, int $logLevel = 4)
     {
         $libFile = $libFile ?? $this->getLibFilename();
 

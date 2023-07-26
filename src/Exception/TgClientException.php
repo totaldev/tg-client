@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Totaldev\TdClient\Exception;
+namespace Totaldev\TgClient\Exception;
 
 use Exception;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
  */
-class TdClientException extends Exception
+class TgClientException extends Exception
 {
+    
 }
