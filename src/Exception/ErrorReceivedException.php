@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Totaldev\TgClient\Exception;
 
-use Totaldev\Schema\Error;
+use Totaldev\TgSchema\Error\Error;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>

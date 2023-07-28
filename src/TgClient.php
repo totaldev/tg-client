@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Totaldev\TgClient;
 
-use Totaldev\Schema\Error;
-use Totaldev\Schema\LogStreamDefault;
-use Totaldev\Schema\LogStreamEmpty;
-use Totaldev\Schema\LogStreamFile;
-use Totaldev\Schema\SetLogStream;
-use Totaldev\Schema\SetLogVerbosityLevel;
-use Totaldev\Schema\TdFunction;
-use Totaldev\Schema\TdObject;
-use Totaldev\Schema\TdSchemaRegistry;
-use Totaldev\Schema\UpdateOption;
+use Totaldev\TgSchema\Error;
+use Totaldev\TgSchema\LogStreamDefault;
+use Totaldev\TgSchema\LogStreamEmpty;
+use Totaldev\TgSchema\LogStreamFile;
+use Totaldev\TgSchema\SetLogStream;
+use Totaldev\TgSchema\SetLogVerbosityLevel;
+use Totaldev\TgSchema\TdFunction;
+use Totaldev\TgSchema\TdObject;
+use Totaldev\TgSchema\TdSchemaRegistry;
+use Totaldev\TgSchema\UpdateOption;
 use Totaldev\TgClient\Exception\AdapterException;
 use Totaldev\TgClient\Exception\ErrorReceivedException;
 use Totaldev\TgClient\Exception\JsonException;
@@ -86,6 +86,8 @@ class TgClient
             if ((time() - $startTime) > $timeout) {
                 throw new QueryTimeoutException($packet);
             }
+
+            usleep(10000);
         }
 
         return $obj;
