@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Totaldev\TgClient;
 
-use Totaldev\TgSchema\Error;
-use Totaldev\TgSchema\LogStreamDefault;
-use Totaldev\TgSchema\LogStreamEmpty;
-use Totaldev\TgSchema\LogStreamFile;
-use Totaldev\TgSchema\SetLogStream;
-use Totaldev\TgSchema\SetLogVerbosityLevel;
+use Totaldev\TgSchema\Error\Error;
+use Totaldev\TgSchema\Log\LogStreamDefault;
+use Totaldev\TgSchema\Log\LogStreamEmpty;
+use Totaldev\TgSchema\Log\LogStreamFile;
+use Totaldev\TgSchema\Set\SetLogStream;
+use Totaldev\TgSchema\Set\SetLogVerbosityLevel;
 use Totaldev\TgSchema\TdFunction;
 use Totaldev\TgSchema\TdObject;
 use Totaldev\TgSchema\TdSchemaRegistry;
-use Totaldev\TgSchema\UpdateOption;
 use Totaldev\TgClient\Exception\AdapterException;
 use Totaldev\TgClient\Exception\ErrorReceivedException;
 use Totaldev\TgClient\Exception\JsonException;
@@ -21,12 +20,21 @@ use Totaldev\TgClient\Exception\QueryTimeoutException;
 use Totaldev\TgClient\Exception\TgClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Totaldev\TgSchema\Update\UpdateOption;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
+ * @author  Vadim Kovalenko
  */
 class TgClient
 {
+    public const VERBOSITY_FATAL = 0;
+    public const VERBOSITY_ERROR = 1;
+    public const VERBOSITY_WARNING = 2;
+    public const VERBOSITY_INFO = 3;
+    public const VERBOSITY_DEBUG = 4;
+    public const VERBOSITY_TRACE = 5;
+
     private AdapterInterface $adapter;
 
     private LoggerInterface $logger;
@@ -45,14 +53,13 @@ class TgClient
      * Sends packet to TdLib marked with extra identifier and loops till received marked response back or timeout
      * occurs. Stores all in between packets in backlog.
      *
-     * @param TdFunction $packet request packet to send to TdLib
-     * @param int $timeout the maximum number of seconds allowed for this function to wait for a response
+     * @param TdFunction $packet         request packet to send to TdLib
+     * @param int        $timeout        the maximum number of seconds allowed for this function to wait for a response
      *                                   packet
-     * @param float $receiveTimeout the maximum number of seconds allowed for this function to wait for new data
+     * @param float      $receiveTimeout the maximum number of seconds allowed for this function to wait for new data
      *
-     * @throws AdapterException
+     * @return TdObject
      * @throws ErrorReceivedException
-     * @throws JsonException
      * @throws QueryTimeoutException
      */
     public function query(TdFunction $packet, int $timeout = 10, float $receiveTimeout = 0.1): TdObject
@@ -73,15 +80,13 @@ class TgClient
                 if ((time() - $startTime) > $timeout) {
                     throw new QueryTimeoutException($packet);
                 }
-
                 continue;
             }
 
             if ($extra === $obj->getTdExtra()) {
                 break;
-            } else {
-                $this->packetBacklog[] = $obj;
             }
+            $this->packetBacklog[] = $obj;
 
             if ((time() - $startTime) > $timeout) {
                 throw new QueryTimeoutException($packet);
@@ -94,12 +99,11 @@ class TgClient
     }
 
     /**
-     * @param float $timeout the maximum number of seconds allowed for this function to wait for new data
-     * @param bool $processBacklog should process backlog packets
+     * @param float $timeout        the maximum number of seconds allowed for this function to wait for new data
+     * @param bool  $processBacklog should process backlog packets
      *
-     * @throws AdapterException
+     * @return TdObject|null
      * @throws ErrorReceivedException
-     * @throws JsonException
      */
     public function receive(float $timeout, bool $processBacklog = true): ?TdObject
     {
@@ -132,8 +136,6 @@ class TgClient
      *
      * @param TdFunction $packet request packet to send to TdLib
      *
-     * @throws AdapterException
-     * @throws JsonException
      */
     public function send(TdFunction $packet): void
     {
@@ -146,20 +148,18 @@ class TgClient
     }
 
     /**
-     * @param string $file path to the file to where the internal TDLib log will be written
-     * @param int $maxLogFileSize the maximum size of the file to where the internal TDLib log is written before the
+     * @param string $file           path to the file to where the internal TDLib log will be written
+     * @param int    $maxLogFileSize the maximum size of the file to where the internal TDLib log is written before the
      *                               file will be auto-rotated
      *
      * @return $this
      *
-     * @throws AdapterException
-     * @throws JsonException
      */
     public function setLogToFile(string $file, int $maxLogFileSize = PHP_INT_MAX): self
     {
         $this->adapter->execute(
             new SetLogStream(
-                new LogStreamFile($file, $maxLogFileSize)
+                new LogStreamFile($file, $maxLogFileSize, true)
             )
         );
 
@@ -185,9 +185,6 @@ class TgClient
 
     /**
      * @return $this
-     *
-     * @throws AdapterException
-     * @throws JsonException
      */
     public function setLogToStderr(): self
     {
@@ -207,9 +204,6 @@ class TgClient
      *                   greater than 5 and up to 1023 can be used to enable even more logging.
      *
      * @return $this
-     *
-     * @throws AdapterException
-     * @throws JsonException
      */
     public function setLogVerbosityLevel(int $level): self
     {
