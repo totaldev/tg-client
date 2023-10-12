@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Totaldev\TgClient;
 
 use JsonSerializable;
+use Totaldev\TgClient\Exception\AdapterException;
+use Totaldev\TgClient\Exception\JsonException;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
@@ -16,8 +18,6 @@ interface AdapterInterface
      *
      * @param float $timeout the maximum number of seconds allowed for this function to wait for new data
      *
-     * @return array
-     *
      * @throws JsonException
      * @throws AdapterException
      */
@@ -26,23 +26,17 @@ interface AdapterInterface
     /**
      * Sends request to the TDLib client.
      *
-     * @param array|JsonSerializable $request
-     *
      * @throws JsonException
      * @throws AdapterException
      */
-    public function send($request): void;
+    public function send(array|JsonSerializable $request): static;
 
     /**
      * Synchronously executes TDLib request. Only a few requests can be executed synchronously. Can be executed before
      * initialisation.
      *
-     * @param array|JsonSerializable $request
-     *
-     * @return array
-     *
      * @throws JsonException
      * @throws AdapterException
      */
-    public function execute($request): ?array;
+    public function execute(array|JsonSerializable $request): ?array;
 }

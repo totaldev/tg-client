@@ -6,6 +6,7 @@ namespace Totaldev\TgClient;
 
 use FFI;
 use JsonException as PHPJsonException;
+use JsonSerializable;
 use Totaldev\TgClient\Exception\AdapterException;
 use Totaldev\TgClient\Exception\JsonException;
 
@@ -54,7 +55,7 @@ HEADER;
     /**
      * {@inheritdoc}
      */
-    public function execute($request): ?array
+    public function execute(array|JsonSerializable $request): ?array
     {
         $json = json_encode($request, JSON_THROW_ON_ERROR);
 
@@ -103,7 +104,7 @@ HEADER;
     /**
      * {@inheritdoc}
      */
-    public function send($request): void
+    public function send(array|JsonSerializable $request): static
     {
         try {
             $json = json_encode($request, JSON_THROW_ON_ERROR);
@@ -112,11 +113,15 @@ HEADER;
         }
 
         $this->ffi->td_json_client_send($this->getClient(), $json);
+
+        return $this;
     }
 
-    public function setVerbosityLevel(int $logLevel)
+    public function setVerbosityLevel(int $logLevel): static
     {
         $this->ffi->td_set_log_verbosity_level($logLevel);
+
+        return $this;
     }
 
     private function getLibFilename(): string
