@@ -72,7 +72,6 @@ class TgClient
         $this->send($packet);
 
         $startTime = time();
-        $obj = null;
         while (true) {
             $obj = $this->receive($receiveTimeout, false);
 
