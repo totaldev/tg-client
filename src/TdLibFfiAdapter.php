@@ -40,7 +40,7 @@ HEADER;
         try {
             $this->ffi = FFI::cdef(static::TDLIB_HEADER_FILE, $libFile);
         } catch (FFI\Exception $exception) {
-            throw new AdapterException(sprintf('Failed loading TdLib library "%s"', $libFile));
+            throw new AdapterException(sprintf('Failed loading TdLib library "%s"' . PHP_EOL . $exception->getMessage(), $libFile));
         }
         $this->setVerbosityLevel($logLevel);
     }
