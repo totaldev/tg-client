@@ -28,12 +28,12 @@ use Totaldev\TgSchema\Update\UpdateOption;
  */
 class TgClient
 {
-    public const VERBOSITY_FATAL = 0;
-    public const VERBOSITY_ERROR = 1;
-    public const VERBOSITY_WARNING = 2;
-    public const VERBOSITY_INFO = 3;
-    public const VERBOSITY_DEBUG = 4;
-    public const VERBOSITY_TRACE = 5;
+    public const int VERBOSITY_FATAL = 0;
+    public const int VERBOSITY_ERROR = 1;
+    public const int VERBOSITY_WARNING = 2;
+    public const int VERBOSITY_INFO = 3;
+    public const int VERBOSITY_DEBUG = 4;
+    public const int VERBOSITY_TRACE = 5;
 
     private AdapterInterface $adapter;
 

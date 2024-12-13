@@ -24,7 +24,7 @@
         "source": "https://github.com/totaldev/tg-client"
     },
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "totaldev/tg-schema": "^1.0",
         "psr/log": "^1.1"
     },
@@ -53,7 +53,11 @@
         "cs-fix": "php-cs-fixer fix",
         "test-ci": "phpunit --coverage-text --coverage-clover=coverage.clover",
         "test-infection": "infection --min-msi=48 --threads=4 --only-covered",
-        "ci-run": ["@cs-check", "@test-ci", "@test-infection"]
+        "ci-run": [
+            "@cs-check",
+            "@test-ci",
+            "@test-infection"
+        ]
     },
     "extra": {
         "branch-alias": {
