@@ -59,7 +59,9 @@ class TgClient
      * @param float      $receiveTimeout the maximum number of seconds allowed for this function to wait for new data
      *
      * @return TdObject
+     * @throws AdapterException
      * @throws ErrorReceivedException
+     * @throws JsonException
      * @throws QueryTimeoutException
      */
     public function query(TdFunction $packet, int $timeout = 10, float $receiveTimeout = 0.1): TdObject
@@ -102,7 +104,9 @@ class TgClient
      * @param bool  $processBacklog should process backlog packets
      *
      * @return TdObject|null
+     * @throws AdapterException
      * @throws ErrorReceivedException
+     * @throws JsonException
      */
     public function receive(float $timeout, bool $processBacklog = true): ?TdObject
     {
@@ -134,7 +138,8 @@ class TgClient
      * Sends packet to TdLib.
      *
      * @param TdFunction $packet request packet to send to TdLib
-     *
+     * @throws AdapterException
+     * @throws JsonException
      */
     public function send(TdFunction $packet): void
     {
@@ -152,7 +157,8 @@ class TgClient
      *                               file will be auto-rotated
      *
      * @return $this
-     *
+     * @throws AdapterException
+     * @throws JsonException
      */
     public function setLogToFile(string $file, int $maxLogFileSize = PHP_INT_MAX): self
     {
@@ -184,6 +190,8 @@ class TgClient
 
     /**
      * @return $this
+     * @throws AdapterException
+     * @throws JsonException
      */
     public function setLogToStderr(): self
     {
@@ -203,6 +211,8 @@ class TgClient
      *                   greater than 5 and up to 1023 can be used to enable even more logging.
      *
      * @return $this
+     * @throws AdapterException
+     * @throws JsonException
      */
     public function setLogVerbosityLevel(int $level): self
     {
