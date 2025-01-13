@@ -624,7 +624,7 @@ enum ErrorReceivedEnum: string
 
     public static function compareRawCode(string $rawCode, ErrorReceivedEnum $enumCode): bool
     {
-        return $rawCode === self::getRawCode($enumCode->name);
+        return self::getEnumFixCode($rawCode) === $enumCode->name;
     }
 
     public static function getByRawCode(string $rawCode): ?ErrorReceivedEnum

@@ -23,8 +23,23 @@ class ErrorReceivedException extends TgClientException
         );
     }
 
+    public function getEnumEquals(ErrorReceivedEnum $enum): bool
+    {
+        return ErrorReceivedEnum::compareRawCode($this->getError()->getMessage(), $enum);
+    }
+
+    public function getEnumMessage(): ?ErrorReceivedEnum
+    {
+        return ErrorReceivedEnum::getByRawCode($this->getError()->getMessage());
+    }
+
     public function getError(): Error
     {
         return $this->error;
+    }
+
+    public function isEnum(): bool
+    {
+        return (bool)ErrorReceivedEnum::getEnumFixCode($this->getError()->getMessage());
     }
 }
