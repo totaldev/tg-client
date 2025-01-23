@@ -14,12 +14,19 @@ use Totaldev\TgClient\Exception\JsonException;
 interface AdapterInterface
 {
     /**
+     * Synchronously executes TDLib request. Only a few requests can be executed synchronously. Can be executed before
+     * initialisation.
+     *
+     * @throws JsonException
+     */
+    public function execute(array|JsonSerializable $request): ?array;
+
+    /**
      * Receives incoming updates and request responses from the TDLib client.
      *
      * @param float $timeout the maximum number of seconds allowed for this function to wait for new data
      *
      * @throws JsonException
-     * @throws AdapterException
      */
     public function receive(float $timeout): ?array;
 
@@ -27,16 +34,6 @@ interface AdapterInterface
      * Sends request to the TDLib client.
      *
      * @throws JsonException
-     * @throws AdapterException
      */
     public function send(array|JsonSerializable $request): static;
-
-    /**
-     * Synchronously executes TDLib request. Only a few requests can be executed synchronously. Can be executed before
-     * initialisation.
-     *
-     * @throws JsonException
-     * @throws AdapterException
-     */
-    public function execute(array|JsonSerializable $request): ?array;
 }

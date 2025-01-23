@@ -57,7 +57,11 @@ HEADER;
      */
     public function execute(array|JsonSerializable $request): ?array
     {
-        $json = json_encode($request, JSON_THROW_ON_ERROR);
+        try {
+            $json = json_encode($request, JSON_THROW_ON_ERROR);
+        } catch (PHPJsonException $e) {
+            throw new JsonException($e->getMessage());
+        }
 
         $response = $this->ffi->td_json_client_execute(null, $json);
 
@@ -66,7 +70,7 @@ HEADER;
         }
 
         try {
-            return json_decode($response, true, JSON_THROW_ON_ERROR);
+            return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         } catch (PHPJsonException $e) {
             throw new JsonException($e->getMessage());
         }
@@ -95,7 +99,7 @@ HEADER;
         }
 
         try {
-            return json_decode($response, true, JSON_THROW_ON_ERROR);
+            return json_decode($response, true, JSON_THROW_ON_ERROR, JSON_THROW_ON_ERROR);
         } catch (PHPJsonException $e) {
             throw new JsonException($e->getMessage());
         }
@@ -124,6 +128,9 @@ HEADER;
         return $this;
     }
 
+    /**
+     * @throws AdapterException
+     */
     private function getLibFilename(): string
     {
         switch (PHP_OS_FAMILY) {
