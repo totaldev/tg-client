@@ -39,8 +39,10 @@ HEADER;
 
         try {
             $this->ffi = FFI::cdef(static::TDLIB_HEADER_FILE, $libFile);
-        } catch (FFI\Exception $exception) {
-            throw new AdapterException(sprintf('Failed loading TdLib library "%s"' . PHP_EOL . $exception->getMessage(), $libFile));
+        } catch (FFI\Exception $e) {
+            throw new AdapterException(
+                sprintf('Failed loading TdLib library "%s"' . PHP_EOL . $e->getMessage(), $libFile)
+            );
         }
         $this->setVerbosityLevel($logLevel);
     }
@@ -72,7 +74,7 @@ HEADER;
         try {
             return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         } catch (PHPJsonException $e) {
-            throw new JsonException($e->getMessage());
+            throw new JsonException($e->getMessage(), $e->getCode(), null, $response);
         }
     }
 
@@ -99,9 +101,9 @@ HEADER;
         }
 
         try {
-            return json_decode($response, true, JSON_THROW_ON_ERROR, JSON_THROW_ON_ERROR);
+            return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         } catch (PHPJsonException $e) {
-            throw new JsonException($e->getMessage());
+            throw new JsonException($e->getMessage(), $e->getCode(), null, $response);
         }
     }
 
@@ -113,7 +115,7 @@ HEADER;
         try {
             $json = json_encode($request, JSON_THROW_ON_ERROR);
         } catch (PHPJsonException $e) {
-            throw new JsonException($e->getMessage());
+            throw new JsonException($e->getMessage(), $e->getCode(), null, $request);
         }
 
         $this->ffi->td_json_client_send($this->getClient(), $json);
