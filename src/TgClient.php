@@ -34,14 +34,14 @@ class TgClient
     public const int VERBOSITY_DEBUG = 4;
     public const int VERBOSITY_TRACE = 5;
 
-    private AdapterInterface $adapter;
+    protected LoggerInterface $logger;
 
-    private LoggerInterface $logger;
+    private AdapterInterface $adapter;
 
     /** @var TdObject[] */
     private array $packetBacklog;
 
-    public function __construct(AdapterInterface $adapter, LoggerInterface $logger = null)
+    public function __construct(AdapterInterface $adapter, ?LoggerInterface $logger = null)
     {
         $this->adapter = $adapter;
         $this->logger = $logger ?? new NullLogger();

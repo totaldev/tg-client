@@ -15,7 +15,7 @@ use Totaldev\TgClient\Exception\JsonException;
  */
 class TdLibFfiAdapter implements AdapterInterface
 {
-    private const TDLIB_HEADER_FILE = <<<HEADER
+    private const string TDLIB_HEADER_FILE = <<<HEADER
 void *td_json_client_create();
 void td_json_client_send(void *client, const char *request);
 const char *td_json_client_receive(void *client, double timeout);
@@ -135,17 +135,11 @@ HEADER;
      */
     private function getLibFilename(): string
     {
-        switch (PHP_OS_FAMILY) {
-            case 'Darwin':
-                return 'libtdjson.dylib';
-
-            case 'Windows':
-                return 'tdjson.dll';
-
-            case 'Linux':
-                return 'libtdjson.so';
-            default:
-                throw new AdapterException('Please specify tdjson library file');
-        }
+        return match (PHP_OS_FAMILY) {
+            'Darwin' => 'libtdjson.dylib',
+            'Windows' => 'tdjson.dll',
+            'Linux' => 'libtdjson.so',
+            default => throw new AdapterException('Please specify tdjson library file'),
+        };
     }
 }
