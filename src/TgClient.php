@@ -62,7 +62,7 @@ class TgClient
      * @throws QueryTimeoutException
      * @throws ErrorReceivedException
      */
-    public function query(TdFunction $packet, int $timeout = 10, float $receiveTimeout = 0.1): TdObject
+    public function query(TdFunction $packet, int $timeout = 15, float $receiveTimeout = 0.5): TdObject
     {
         if (null === $packet->getTdExtra()) {
             $packet->setTdExtra(spl_object_hash($packet));
