@@ -27,13 +27,6 @@ use Totaldev\TgSchema\Update\UpdateOption;
  */
 class TgClient
 {
-    public const int VERBOSITY_FATAL = 0;
-    public const int VERBOSITY_ERROR = 1;
-    public const int VERBOSITY_WARNING = 2;
-    public const int VERBOSITY_INFO = 3;
-    public const int VERBOSITY_DEBUG = 4;
-    public const int VERBOSITY_TRACE = 5;
-
     protected LoggerInterface $logger;
 
     private AdapterInterface $adapter;

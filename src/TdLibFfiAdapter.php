@@ -33,7 +33,7 @@ HEADER;
      *
      * @throws AdapterException
      */
-    public function __construct(string $libFile = null, int $logLevel = 4)
+    public function __construct(?string $libFile = null, int $logLevel = AdapterInterface::VERBOSITY_ERROR)
     {
         $libFile = $libFile ?? $this->getLibFilename();
 

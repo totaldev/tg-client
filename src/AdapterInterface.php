@@ -13,6 +13,13 @@ use Totaldev\TgClient\Exception\JsonException;
  */
 interface AdapterInterface
 {
+    public const int VERBOSITY_FATAL = 0;
+    public const int VERBOSITY_ERROR = 1;
+    public const int VERBOSITY_WARNING = 2;
+    public const int VERBOSITY_INFO = 3;
+    public const int VERBOSITY_DEBUG = 4;
+    public const int VERBOSITY_TRACE = 5;
+
     /**
      * Synchronously executes TDLib request. Only a few requests can be executed synchronously. Can be executed before
      * initialisation.
