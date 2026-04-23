@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Totaldev\TgClient;
 
 use Totaldev\TgSchema\Error\Error;
+use Totaldev\TgSchema\Get\GetMe;
 use Totaldev\TgSchema\Log\LogStreamDefault;
 use Totaldev\TgSchema\Log\LogStreamEmpty;
 use Totaldev\TgSchema\Log\LogStreamFile;
@@ -20,6 +21,7 @@ use Totaldev\TgClient\Exception\TgClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Totaldev\TgSchema\Update\UpdateOption;
+use Totaldev\TgSchema\User\User;
 
 /**
  * @author  Aurimas Niekis <aurimas@niekis.lt>
@@ -31,6 +33,8 @@ class TgClient
 
     private AdapterInterface $adapter;
 
+    private ?User $me = null;
+
     /** @var TdObject[] */
     private array $packetBacklog;
 
@@ -39,6 +43,15 @@ class TgClient
         $this->adapter = $adapter;
         $this->logger = $logger ?? new NullLogger();
         $this->packetBacklog = [];
+    }
+
+    public function getMe(): ?User
+    {
+        if(null === $this->me) {
+            $this->me = $this->query(new GetMe());
+        }
+
+        return $this->me;
     }
 
     /**
