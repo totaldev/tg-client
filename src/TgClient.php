@@ -165,7 +165,11 @@ class TgClient
     {
         $this->adapter->execute(
             new SetLogStream(
-                new LogStreamFile($file, $maxLogFileSize, true)
+                new LogStreamFile(
+                    maxFileSize: $maxLogFileSize,
+                    path: $file,
+                    redirectStderr: true
+                )
             )
         );
 
