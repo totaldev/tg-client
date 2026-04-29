@@ -45,7 +45,7 @@ class TgClient
         $this->packetBacklog = [];
     }
 
-    public function getMe(): ?User
+    public function getMe(): User
     {
         if(null === $this->me) {
             $this->me = $this->query(new GetMe());
