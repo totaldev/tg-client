@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Totaldev\TgClient;
 
+use Throwable;
 use Totaldev\TgSchema\Error\Error;
 use Totaldev\TgSchema\Get\GetMe;
 use Totaldev\TgSchema\Log\LogStreamDefault;
@@ -123,7 +124,18 @@ class TgClient
             return null;
         }
 
-        $object = TdSchemaRegistry::fromArray($response);
+        try {
+            $object = TdSchemaRegistry::fromArray($response);
+        } catch (Throwable $e) {
+            // Schema drift between the running TDLib binary and tg-schema (e.g. a new/removed
+            // field in a nested object) must not kill the bot: log the raw packet and drop it.
+            $this->logger->warning(
+                sprintf('Dropping unparsable packet "%s": %s', $response['@type'] ?? 'unknown', $e->getMessage()),
+                ['packet' => substr(json_encode($response, JSON_UNESCAPED_UNICODE) ?: '', 0, 4096)]
+            );
+
+            return null;
+        }
 
         $this->logger->debug(
             sprintf('Received packet "%s" from TdLib', $object->getTdTypeName()),
